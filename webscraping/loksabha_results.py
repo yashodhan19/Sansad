@@ -1,7 +1,8 @@
 import logging
 import os
-from bs4 import BeautifulSoup
+import sys
 
+from bs4 import BeautifulSoup
 import pandas as pd
 
 from lib.kirmi import Kirmi
@@ -13,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-OUTPUT_PATH ='/Users/yashodhanjoglekar/LS_results'
+OUTPUT_PATH = sys.argv[0]
 
 def get_url(state_code, ac_code):
     """
