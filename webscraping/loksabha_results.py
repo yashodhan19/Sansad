@@ -56,10 +56,10 @@ def get_jk_results(c, state_code, state_name, ac_code, ac_name):
 def get_constituency_results(url, state_code, state_name, ac_code, ac_name):
     """
     :param url: str, url
-    :param state_code: str, state code
+    :param state_code: str, state code (alphanumeric)
     :param state_name: str, state name
-    :param ac_code: str, ac_code (alphanumeric)
-    :param ac_name: str, ac_code (alphanumeric)
+    :param ac_code: str, assembly constituency code (alphanumeric)
+    :param ac_name: str, assembly constituency name (alphanumeric)
     :return:
     """
     logger.debug("getting data from : %s", url)
