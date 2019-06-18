@@ -5,7 +5,7 @@ import sys
 from bs4 import BeautifulSoup
 import pandas as pd
 
-from lib.kirmi import Kirmi
+from lib.kirmi.kirmi import Kirmi
 
 scraper = Kirmi()
 scraper.sleep_time = 10
