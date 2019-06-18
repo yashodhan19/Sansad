@@ -12,12 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 class SQLiteCache(object):
-    """SQLite cache for request responses."""
-    _columns = ['key', 'status', 'modified', 'encoding', 'data', 'headers']
+    """SQLite cache for request responses.
+    will only cache responses with status_code 200
+    """
+    _columns = ['key', 'status', 'encoding', 'data', 'headers']
 
-    def __init__(self, cache_path, check_last_modified=False):
+    def __init__(self, cache_path):
         self.cache_path = cache_path
-        self.check_last_modified = check_last_modified
         self._conn = sqlite3.connect(cache_path)
         self._conn.text_factory = str
         self._create_table()
@@ -25,20 +26,18 @@ class SQLiteCache(object):
     def _create_table(self):
         """Create table for storing request information and response."""
         self._conn.execute("""CREATE TABLE IF NOT EXISTS cache
-                (key text UNIQUE, status integer, modified text,
+                (key text UNIQUE, status integer,
                  encoding text, data blob, headers blob)""")
 
     def set(self, key, response):
         """Set cache entry for key with contents of response."""
 
-        print(response)
-        mod = response.headers.pop('last-modified', None)
         status = int(response.status_code)
-        rec = (key, status, mod, response.encoding, response.content,
+        rec = (key, status, response.encoding, response.content,
                json.dumps(dict(response.headers)))
         with self._conn:
             self._conn.execute("DELETE FROM cache WHERE key=?", (key, ))
-            self._conn.execute("INSERT INTO cache VALUES (?,?,?,?,?,?)", rec)
+            self._conn.execute("INSERT INTO cache VALUES (?,?,?,?,?)", rec)
 
     def get(self, key):
         """Get cache entry for key, or return None."""
@@ -67,6 +66,19 @@ class SQLiteCache(object):
 
 class Kirmi():
     def __init__(self, **kwargs):
+        """
+        :param kwargs: retry_attempts (int)
+        :param kwargs: retry_sleep_time (int)
+        :param kwargs: timeout (int)
+        :param kwargs: timeout (str)
+        :param kwargs: parser (str)
+        :param kwargs: default_headers (dict)
+        :param kwargs: proxies (list)
+        :param kwargs: session (object) requests.Session
+        :param kwargs: cache_path (str) path
+        :param kwargs: caching (bool)
+
+        """
         self.retry_attempts = kwargs.pop('retry_attempts', 3)
         self.retry_sleep_time = kwargs.pop('retry_sleep_time', 5)
         self.timeout = kwargs.pop('timeout', 10)
@@ -109,10 +121,11 @@ class Kirmi():
 
                     cache_key = self.create_cache_key(
                         url, headers=headers, data=data)
-                    print(cache_key)
                     cached_response = self.cache.get(cache_key)
 
                     if cached_response:
+                        logger.debug(
+                            f"returning response from cache : {cache_key}")
                         return cached_response
 
                 if data is None:
@@ -135,7 +148,7 @@ class Kirmi():
                             "Trying again in %s seconds!", self.retry_sleep_time)
                         time.sleep(self.retry_sleep_time)
                         continue
-                    logger.warning("Exhausted all retry_attempts!")
+                    logger.warning("Exhausted all retry attempts!")
 
                 return response
 
@@ -176,10 +189,12 @@ if __name__ == "__main__":
                'Content-Type': 'application/x-www-form-urlencoded'}
 
     kirmi = Kirmi(default_headers=headers, caching=True,
-                  cache_path="/Users/yashodhanjoglekar/cameralism/data.sqlite3")
+                  cache_path="/tmp/data.sqlite3")
+
+    kirmi.cache.clear()
 
     kirmi.get_soup("http://www.reddit.com/")
 
     kirmi.get_soup("http://www.reddit.com/")
 
-    print(kirmi.get_soup("http://www.reddit.com/"))
+    kirmi.get_soup("http://www.reddit.com/")
