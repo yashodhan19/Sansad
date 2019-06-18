@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 OUTPUT_PATH = sys.argv[0]
 
+
 def get_url(state_code, ac_code):
     """
     :param state_code: 3 digit alphanumeric code
@@ -36,23 +37,25 @@ def get_state_list(xml_path=None):
 
     return soup.find_all('option'), soup.find_all('input')
 
+
 def get_jk_results(c, state_code, state_name, ac_code, ac_name):
     # J & K has migrant votes
     # We combine them with Postal votes
     jk_dict = {'OSN': c[0].get_text().strip(),
-                'Candidate': c[1].get_text().strip(),
-                'Party': c[2].get_text().strip(),
-                "EVM Votes": c[3].get_text().strip(),
-                "Postal Votes": int(c[4].get_text().strip()) + int(c[5].get_text().strip()),
-                "Total of Votes": c[6].get_text().strip(),
-                "Percent of Votes": c[7].get_text().strip(),
-                "State": state_name,
-                "State_Code": state_code,
-                "AC_Code": ac_code,
-                "Constituency": ac_name
-                }
+               'Candidate': c[1].get_text().strip(),
+               'Party': c[2].get_text().strip(),
+               "EVM Votes": c[3].get_text().strip(),
+               "Postal Votes": int(c[4].get_text().strip()) + int(c[5].get_text().strip()),
+               "Total of Votes": c[6].get_text().strip(),
+               "Percent of Votes": c[7].get_text().strip(),
+               "State": state_name,
+               "State_Code": state_code,
+               "AC_Code": ac_code,
+               "Constituency": ac_name
+               }
 
     return jk_dict
+
 
 def get_constituency_results(url, state_code, state_name, ac_code, ac_name):
     """
@@ -73,20 +76,21 @@ def get_constituency_results(url, state_code, state_name, ac_code, ac_name):
         candidate_dict = dict()
 
         if state_code == "S09":
-            candidate_dict.update(get_jk_results(c, state_code, state_name, ac_code, ac_name))
+            candidate_dict.update(get_jk_results(
+                c, state_code, state_name, ac_code, ac_name))
         else:
             candidate_dict.update({'OSN': c[0].get_text().strip(),
-                      'Candidate': c[1].get_text().strip(),
-                      'Party': c[2].get_text().strip(),
-                      "EVM Votes": c[3].get_text().strip(),
-                      "Postal Votes": c[4].get_text().strip(),
-                      "Total of Votes" : c[5].get_text().strip(),
-                      "Percent of Votes": c[6].get_text().strip(),
-                      "State": state_name,
-                      "State_Code": state_code,
-                      "AC_Code": ac_code,
-                      "Constituency": ac_name
-                      })
+                                   'Candidate': c[1].get_text().strip(),
+                                   'Party': c[2].get_text().strip(),
+                                   "EVM Votes": c[3].get_text().strip(),
+                                   "Postal Votes": c[4].get_text().strip(),
+                                   "Total of Votes": c[5].get_text().strip(),
+                                   "Percent of Votes": c[6].get_text().strip(),
+                                   "State": state_name,
+                                   "State_Code": state_code,
+                                   "AC_Code": ac_code,
+                                   "Constituency": ac_name
+                                   })
 
         data.append(candidate_dict)
 
@@ -114,9 +118,9 @@ def process():
             ac_name = ac_details[1]
             logger.info("COnstituency:  %s ", ac_name)
             url = get_url(state_code=state_code, ac_code=str(ac_code))
-            get_constituency_results(url, state_code, state_name, ac_code, ac_name)
+            get_constituency_results(
+                url, state_code, state_name, ac_code, ac_name)
+
 
 if __name__ == "__main__":
     process()
-
-
