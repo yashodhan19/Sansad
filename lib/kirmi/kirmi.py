@@ -101,10 +101,10 @@ class Kirmi():
     def create_cache_key(self, url, headers=None, data=None):
         return str(uuid.uuid5(uuid.NAMESPACE_DNS, json.dumps({'url': url, 'headers': headers, 'data': data})))
 
-    def make_request(self, url, headers=None, data=None):
+    def request(self, url, headers=None, data=None):
         """
-        :param url: URL to send
-        :param headers: dictionary of headers to send
+        :param url: (str) URL
+        :param headers: (dict)
         :param data: the body to attach to the request
         :return:
         """
@@ -176,7 +176,7 @@ class Kirmi():
             parser = self.parser
 
         if response is None:
-            response = self.make_request(url, headers=headers, data=data)
+            response = self.request(url, headers=headers, data=data)
 
         soup = BeautifulSoup(response.text, parser)
 
@@ -188,13 +188,11 @@ if __name__ == "__main__":
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36',
                'Content-Type': 'application/x-www-form-urlencoded'}
 
-    kirmi = Kirmi(default_headers=headers, caching=True,
+    scraper = Kirmi(default_headers=headers, caching=True,
                   cache_path="/tmp/data.sqlite3")
 
-    kirmi.cache.clear()
+    scraper.cache.clear()
 
-    kirmi.get_soup("http://www.reddit.com/")
-
-    kirmi.get_soup("http://www.reddit.com/")
-
-    kirmi.get_soup("http://www.reddit.com/")
+    scraper.get_soup("http://www.reddit.com/")
+    scraper.get_soup("http://www.reddit.com/")
+    scraper.get_soup("http://www.reddit.com/")
