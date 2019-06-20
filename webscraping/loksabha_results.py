@@ -116,7 +116,7 @@ def process():
             ac_details = ac.split(",")
             ac_code = ac_details[0]
             ac_name = ac_details[1]
-            logger.info("COnstituency:  %s ", ac_name)
+            logger.info("Constituency:  %s ", ac_name)
             url = get_url(state_code=state_code, ac_code=str(ac_code))
             get_constituency_results(
                 url, state_code, state_name, ac_code, ac_name)
