@@ -14,3 +14,8 @@ Here is a simple collection of scrapers for sourcing information about the elect
 	Set VIRTUAL_ENV to the location of your virtual env bin/.
 
 	export VIRTUAL_ENV=~/.virtualenvs/Sansad/bin
+	
+	
+## VIZ
+https://public.tableau.com/profile/yashodhan7289#!/vizhome/LokSabhaResults2019/Dashboard1
+
