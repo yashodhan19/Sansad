@@ -101,11 +101,12 @@ class Kirmi():
     def create_cache_key(self, url, headers=None, data=None):
         return str(uuid.uuid5(uuid.NAMESPACE_DNS, json.dumps({'url': url, 'headers': headers, 'data': data})))
 
-    def request(self, url, headers=None, data=None):
+    def request(self, url, headers=None, data=None, download=False):
         """
         :param url: (str) URL
         :param headers: (dict)
         :param data: the body to attach to the request
+        :param download: bool (stream on get request)
         :return:
         """
 
@@ -117,7 +118,7 @@ class Kirmi():
                 self.create_new_session()
 
             try:
-                if self.caching:
+                if self.caching and not download:
 
                     cache_key = self.create_cache_key(
                         url, headers=headers, data=data)
@@ -130,13 +131,14 @@ class Kirmi():
 
                 if data is None:
                     response = self.session.get(
-                        url=url, headers=headers, timeout=self.timeout)
+                        url=url, headers=headers, timeout=self.timeout, stream=download)
                 else:
                     response = self.session.post(
                         url=url, headers=headers, data=data, stream=True)
 
                 if self.caching and response and response.status_code == 200:
-                    self.cache.set(cache_key, response)
+                    if not download:
+                        self.cache.set(cache_key, response)
 
                 logger.debug("Request time elapsed : %s",
                              response.elapsed.total_seconds())
