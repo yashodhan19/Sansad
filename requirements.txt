@@ -4,3 +4,4 @@ requests==2.21.0
 pandas==0.23.4
 camelot-py[cv]
 isort==4.3.15
+sqlite==3.26.0
