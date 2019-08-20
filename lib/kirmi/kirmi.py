@@ -134,7 +134,7 @@ class Kirmi():
                         url=url, headers=headers, timeout=self.timeout, stream=download)
                 else:
                     response = self.session.post(
-                        url=url, headers=headers, data=data, stream=True)
+                        url=url, headers=headers, data=data, stream=download)
 
                 if self.caching and response and response.status_code == 200:
                     if not download:
