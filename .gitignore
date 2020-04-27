@@ -106,3 +106,10 @@ venv.bak/
 
 *.jpg
 *.pdf
+/webscraping/LOKSABHA_ATTENDANCE_16/
+/webscraping/LOKSABHA_ATTENDANCE/
+/webscraping/LOKSABHA_BULLETIN/
+/venv2/
+/webscraping/bulletin_cache.sqlite3
+/webscraping/merge.csv
+
