@@ -19,8 +19,8 @@ from utils.roman import from_roman
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-LS_NUMBER = '17'
-OUTPUT_PATH = os.path.join(os.getcwd(), "LOKSABHA_ATTENDANCE")
+LS_NUMBER = '16'
+OUTPUT_PATH = os.path.join(os.getcwd(), ("LOKSABHA_ATTENDANCE_" + str(LS_NUMBER)))
 
 kirmi = Kirmi()
 
@@ -108,6 +108,7 @@ def get_all_ls_sessions(soup):
     ls_sessions = soup.find(
         "select", attrs={
             "id": "ContentPlaceHolder1_DropDownListSession"}).find_all("option")
+    print(ls_sessions)
     for ls in ls_sessions:
         # The site has Roman Numerals
         session_number = re.search(r"^[IVXLCDM]+(?:\s)", ls.text)
@@ -132,7 +133,6 @@ def get_ls_session_dates(soup):
 def get_mp_attendance(soup):
 
     ls_session_dates = get_ls_session_dates(soup)
-
     ls_date_prev = None
 
     for ls_session in get_all_ls_sessions(soup):
@@ -173,6 +173,21 @@ def run_process():
     soup = kirmi.get_soup(
         "http://164.100.47.194/Loksabha/Members/MemberAttendance.aspx",
         parser="html.parser")
+
+    if LS_NUMBER != '17':
+        soup = kirmi.get_soup(
+            "http://164.100.47.194/Loksabha/Members/MemberAttendance.aspx",
+            parser="html.parser",
+            data={'__EVENTTARGET': 'ctl00$ContentPlaceHolder1$DropDownListLoksabha',
+                '__EVENTARGUMENT': '',
+                '__LASTFOCUS': '',
+                '__VIEWSTATE': soup.find('input',{'id':'__VIEWSTATE'}).attrs['value'],
+                '__VIEWSTATEGENERATOR': soup.find('input',{'id':'__VIEWSTATEGENERATOR'}).attrs['value'],
+                '__VIEWSTATEENCRYPTED':'',
+                '__EVENTVALIDATION': soup.find('input', {'id': '__EVENTVALIDATION'}).attrs['value'],
+                'ctl00$txtSearchGlobal':'',
+               'ctl00$ContentPlaceHolder1$DropDownListLoksabha': str(LS_NUMBER)
+        })
 
     get_mp_attendance(soup)
 
